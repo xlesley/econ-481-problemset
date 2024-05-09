@@ -34,11 +34,15 @@ def scrape_code(url: str) -> str:
     """
 
     req_obj = requests.get(url)
-    if req_obj.status_code == 200:
-        soup = BeautifulSoup(req_obj.text)
-        code = soup.find_all('code', class_='sourceCode python')
-        code_chunk = '\n'.join(item.get_text().strip() for item in code)
-        return code_chunk
+    if req_obj.ok:
+        soup = BeautifulSoup(req_obj.text, 'html.parser')
+        codes = soup.find_all('code', attrs={'class': 'sourceCode python'})
+        code_str = ''
+        for code in codes:
+            lines = code.get_text().split('\n')
+            sanitized = '\n'.join([line for line in lines if not line.startswith('%')])
+            code_str += sanitized + '\n'
+        return code_str
     else:
         print("Failed to fetch the webpage. Status code:", req_obj.status_code)
         return None
