@@ -80,15 +80,15 @@ def min_increment_freq() -> str:
     """
 
     query = """
-            SELECT
-            SUM(CASE WHEN b2.bidAmount = b1.bidAmount + i.bidIncrement THEN 1
-                ELSE 0
-                END) * 1.0 / COUNT(b2.bidAmount) AS freq
+            SELECT 
+                SUM(CASE 
+                        WHEN b2.bidAmount = b1.bidAmount + i.bidIncrement THEN 1
+                        ELSE 0
+                    END) * 1.0 / COUNT(b2.bidAmount) AS freq
             FROM bids b1
             JOIN bids b2 ON b1.itemId = b2.itemId AND b1.bidAmount < b2.bidAmount
             JOIN items i ON i.itemId = b1.itemId
             WHERE i.isBuyNowUsed = 0
-            GROUP BY b1.itemId
             """
 
     return query
